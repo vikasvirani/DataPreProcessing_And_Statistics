@@ -1,0 +1,202 @@
+---
+title: "MATH2349 Semester 2, 2018"
+author: "Student name(s) and numbers comes here"
+subtitle: Assignment 3
+output:
+  html_notebook: default
+---
+
+
+## IMPORTANT NOTE: 
+
+All the instructions to complete this assignment are available on the [MATH2349_1850 Assignment_3](https://drive.google.com/open?id=106_Wt_fPzf8Itfhmaf1mo0GsunqMbpwg4dVKc-m1fnA) Word file. Please read through this document carefully before submitting your report.
+
+**Groups**
+
+Students are permitted to work individually or in groups of up to 3 people for Assignment 3. **Each group must fill out the [group registration form](https://docs.google.com/forms/d/e/1FAIpQLScrQW4KC9ngITARfe8JjEDKNxXX-ZwbrvI4942bGNkqf2CSOw/viewform?usp=sf_link)** before 14/10/2018 to register their group details. 
+
+
+All group members must submit a copy of the report! Group members that are not registered and do not submit a report will not be acknowledged.
+
+
+You must use the headings and chunks provided in the template, you may add additional sections and R chunks if you require. In the report, all R chunks and outputs needs to be visible. Failure to do so will result in a loss of marks. 
+
+
+This report must be uploaded to Turnitin as a PDF with your code chunks and outputs showing. The easiest way to achieve this is to Preview your notebook in HTML (by clicking Preview) → Open in Browser (Chrome) → Right click on the report in Chrome → Click Print and Select the Destination Option to Save as PDF.
+
+
+You must also publish your report to RPubs (see [here](https://astral-theory-157510.appspot.com/secured/RBootcamp_Course_04.html#creating_an_r_markdown_document_in_r_studio)) and and submit this RPubs link to the [google form given here](https://docs.google.com/forms/d/e/1FAIpQLScp7o65p0ffYILhyQF98rDr66ODkKEq0McHCU0pAq1wV1nrxg/viewform?usp=sf_link). This online version of the report will be used for marking. Failure to submit your link will delay your feedback and risk late penalties.
+
+
+**Feel free to DELETE the instructional text provided in the template.** If you have any questions regarding the assignment instructions and the R template, please post it on [Slack](https://math2349-1850.slack.com) under the `#assignment3` channel. 
+
+
+## Required packages 
+
+
+Provide the packages required to reproduce the report. Make sure you fulfilled the minimum requirement #10.
+
+```{r}
+
+library(dplyr)
+library(readr)
+library(tidyr)
+library(MVN)
+library(data.table)
+
+```
+
+
+## Executive Summary 
+
+
+In your own words, provide a brief summary of the preprocessing. Explain the steps that you have taken to preprocess your data. Write this section last after you have performed all data preprocessing. (Word count Max: 300 words)
+
+
+## Data 
+
+A clear description of data sets, their sources, and variable descriptions should be provided. In this section, you must also provide the R codes with outputs (head of data sets) that you used to import/read/scrape the data set. You need to fulfil the minimum requirement #1 and merge at least two data sets to create the one you are going to work on. In addition to the R codes and outputs, you need to explain the steps that you have taken.
+
+
+```{r}
+
+ImportGoods <- read_csv("Import of goods.csv")
+ImportGoods <- ImportGoods[0:9506,]
+ImportGoods <- ImportGoods %>% select(`Country or Area`,Year,Series,Currency,`SNA System`,Value)
+ImportGoods <- ImportGoods %>% subset(ImportGoods$`Country or Area` %in% c("United Kingdom","United States","Japan","Germany","Australia","Canada","France") & ImportGoods$Year %in% c(seq(1970,2010)))
+
+head(ImportGoods)
+str(ImportGoods)
+
+
+ExportGoods <- read_csv("Export of goods.csv")
+ExportGoods <- ExportGoods[0:9506,]
+ExportGoods <- ExportGoods %>% select(`Country or Area`,Year,Series,Currency,`SNA System`,Value)
+ExportGoods <- ExportGoods %>% subset(ExportGoods$`Country or Area` %in% c("United Kingdom","United States","Japan","Germany","Australia","Canada","France") & ExportGoods$Year %in% c(seq(1970,2010)))
+
+head(ExportGoods)
+str(ExportGoods)
+
+GoodsStatistic <- ImportGoods %>% inner_join(ExportGoods,by = c("Country or Area","Year","Series","SNA System","Currency"))
+
+
+colnames(GoodsStatistic) <- c("Country","Year","SNA_Series","Currency","SNA_System","Gross_Imports","Gross_Exports")
+
+
+#GoodsStatistic <- GoodsStatistic %>% setnames(old = c("Country or Area","Year","Series","SNA System","Currency","Value.x","Value.y"),new = c("Country","Year","Series","SNA_System","Currency","Gross_Imports","Gross_Exports"))
+GoodsStatistic <- GoodsStatistic %>% group_by(Country,Year) %>% slice(which.max(SNA_System))
+
+GoodsStatistic$Country %>%  table()
+
+
+```
+
+## Understand 
+
+Summarise the types of variables and data structures, check the attributes in the data. In addition to the R codes and outputs, explain briefly the steps that you have taken. In this section, show that you have fulfilled minimum requirements 2-4.
+
+```{r}
+
+#Factoring
+GoodsStatistic$Country <- GoodsStatistic$Country %>% as.factor()
+str(GoodsStatistic$Country)
+
+GoodsStatistic$SNA_Series <- GoodsStatistic$SNA_Series %>% as.factor()
+GoodsStatistic$SNA_System <- GoodsStatistic$SNA_System %>% as.factor()
+
+GoodsStatistic$Year <- GoodsStatistic$Year %>% factor(levels = c(seq(1970,2010)),labels = c(seq(1970,2010)), ordered = TRUE) 
+str(GoodsStatistic$Year)
+
+GoodsStatistic$Currency <- GoodsStatistic$Currency %>% factor(levels = c("1999 FRF euro / euro","1999 DEM euro / euro","Euro","Australian dollar","Canadian dollar","yen","pound sterling","US dollar"),labels = c("EUR","EUR","EUR","AUD","CAD","JPY","GBP","USD"),ordered = FALSE) 
+str(GoodsStatistic$Currency)
+
+
+```
+
+
+##	Tidy & Manipulate Data I 
+
+Check if the data conforms the tidy data principles. If your data is not in a tidy format, reshape your data into a tidy format (minimum requirement #5). In addition to the R codes and outputs, explain everything that you do in this step.
+
+
+```{r}
+
+
+
+```
+
+##	Tidy & Manipulate Data II 
+
+Create/mutate at least one variable from the existing variables (minimum requirement #6). In addition to the R codes and outputs, explain everything that you do in this step..
+
+```{r}
+
+
+GoodsStatistic <- GoodsStatistic %>% mutate(Terms_Of_Trade = (Gross_Exports / Gross_Imports)*100)
+GoodsStatistic <- GoodsStatistic %>% mutate(Net_Exports = Gross_Exports - Gross_Imports)
+  
+
+```
+
+
+##	Scan I 
+
+Scan the data for missing values, inconsistencies and obvious errors. In this step, you should fulfil the minimum requirement #7. In addition to the R codes and outputs, explain how you dealt with these values.
+
+```{r}
+
+na_Count_Gross_Imports <- sum(is.na(GoodsStatistic$Gross_Imports))
+na_Count_Gross_Exports <- sum(is.na(GoodsStatistic$Gross_Exports))
+na_Count_TOT <- sum(is.na(GoodsStatistic$Terms_Of_Trade))
+na_Count_Net_Exports <- sum(is.na(GoodsStatistic$Net_Exports))
+
+na_Count_Gross_Imports
+na_Count_Gross_Exports
+na_Count_TOT
+na_Count_Net_Exports
+
+```
+
+
+##	Scan II
+
+Scan the numeric data for outliers. In this step, you should fulfil the minimum requirement #8. In addition to the R codes and outputs, explain how you dealt with these values.
+
+```{r}
+
+boxplot(GoodsStatistic$Gross_Imports ~ GoodsStatistic$Country)
+boxplot(GoodsStatistic$Gross_Exports ~ GoodsStatistic$Country)
+boxplot(GoodsStatistic$Terms_Of_Trade ~ GoodsStatistic$Country)
+
+```
+
+
+##	Transform 
+
+Apply an appropriate transformation for at least one of the variables. In addition to the R codes and outputs, explain everything that you do in this step. In this step, you should fulfil the minimum requirement #9.
+
+```{r}
+
+GoodsStatistic <- GoodsStatistic %>% group_by(Country) %>% mutate(NOR = (Gross_Imports- min(Gross_Imports)) /(max(Gross_Imports)-min(Gross_Imports)))
+GoodsStatistic$NOR %>% round(3)
+
+transTest <- GoodsStatistic
+
+transTest <- transTest %>% group_by(Country) %>% mutate(Gross_Imports1 = scale(Gross_Imports,center = TRUE,scale = TRUE))
+histogram(~ Gross_Imports1 | Country,data = transTest)
+
+transTest$Gross_Imports1
+
+transTest <- transTest %>% group_by(Country) %>% mutate(Gross_Exports1 = scale(Gross_Exports,center = TRUE,scale = TRUE))
+histogram(~ Gross_Exports1 | Country,data = transTest) 
+
+```
+
+
+NOTE: Follow the order outlined above in the report. Make sure your code is visible (within the margin of the page). Do not use View() to show your data instead give headers (using head() )
+
+
+Any further or optional pre-processing tasks can be added to the template using an additional section in the R Markdown file. Please also provide the R codes, outputs and brief explanations on why and how you applied these tasks on the data.
+
+<br>
+<br>
