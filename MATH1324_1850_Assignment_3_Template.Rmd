@@ -1,0 +1,146 @@
+---
+title: "Your Title Comes Here"
+subtitle: "Subtitle Comes Here"
+author: "Student(s) Names and Student ID's Come Here"
+date: "Last updated: `r format(Sys.time(), '%d %B, %Y')`"
+output:
+  slidy_presentation:
+    font_adjustment: 0
+    highlight: haddock
+    mathjax: "default"
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+# Use this chunk to quietly load your pacakges
+
+knitr::opts_chunk$set(
+	fig.align = "center",
+	message = FALSE,
+	warning = FALSE
+)
+# Packages loaded in this chunk will not appear in the presentation. 
+
+library(ggplot2) # Useful for creating plots
+library(dplyr)  # Useful for data maipulation
+library(knitr) # Useful for creating nice tables
+
+```
+
+
+# RPubs link information
+
+- You must publish your presentation to RPubs (see [here](https://astral-theory-157510.appspot.com/secured/RBootcamp_Course_04.html#creating_an_r_markdown_document_in_r_studio)) and add this link to your presentation here.
+
+- Rpubs link comes here: www.........
+
+- This online version of the presentation will be used for marking. Failure to add your link will delay your feedback and risk late penalties.
+
+# Introduction
+
+- The following link will help you with creating R Markdown Slidy Presentations
+- http://rmarkdown.rstudio.com/slidy_presentation_format.html
+- Don't forget about [Bootcamp 4](https://astral-theory-157510.appspot.com/secured/RBootcamp_Course_04.html)
+- A good introduction provides a brief background to the problem, defines important terms, and leads to a strong rationale. 
+
+# Introduction Cont.
+
+- Keep everything short and straight to the point. 
+- Use bullet points to help minimise text.
+- Add relevant images to make your presentation more appealing
+- Remember, you have a maximum of 20 slides to fit everything in.
+- Ensure each slide fits on one screen. The reader should not have to scroll down. 
+
+
+# Problem Statement
+
+- State the overall problem/question driving the investigation
+- Summarise how you will use statistics to solve the problem or answer your question.
+
+# Data
+
+- You can use multiple slides to break up your sections. 
+- Explain how you collected your data.
+- There should be enough detail here so that someone else could replicate your data collection.
+- Explain the sampling method if known
+- Ensure you reference the data source if you have used Open Data
+
+
+# Data Cont.
+
+- List and explain the important variables. 
+- If you have factors, explain each level.
+- Explain the scale of numeric variables.
+- Justify everything that you do to preprocess the data.
+
+```{r}
+
+Unemployement_male <- read.csv("indicator_f 25-54 unemploy.csv")
+
+
+```
+
+# Descriptive Statistics and Visualisation
+
+- Summarise the important variables in your investigation.
+- Use visualisation to highlight interesting features of the data and tell the overall story.
+- Explain how you dealt with data issues (if any), e.g. missing data and outliers.
+- Here are the examples of R chunks and outputs
+
+```{r}
+plot(Sepal.Length ~ Petal.Length, data = iris)
+```
+
+# Decsriptive Statistics Cont.
+
+- You can use the `knitr:kable` function to print nice HTML tables. Here is an example R code:
+
+```{r}
+iris %>% group_by(Species) %>% summarise(Min = min(Petal.Length,na.rm = TRUE),
+                                           Q1 = quantile(Petal.Length,probs = .25,na.rm = TRUE),
+                                           Median = median(Petal.Length, na.rm = TRUE),
+                                           Q3 = quantile(Petal.Length,probs = .75,na.rm = TRUE),
+                                           Max = max(Petal.Length,na.rm = TRUE),
+                                           Mean = mean(Petal.Length, na.rm = TRUE),
+                                           SD = sd(Petal.Length, na.rm = TRUE),
+                                           n = n(),
+                                           Missing = sum(is.na(Petal.Length))) -> table1
+knitr::kable(table1)
+```
+
+
+# Hypothesis Testing
+
+- Apply an appropriate hypothesis test for your investigation. 
+- Ensure you state and check any assumptions. 
+- Report the appropriate values and interpret the results.
+- Here is an example:
+
+```{r}
+model1 <- lm(Sepal.Length ~ Petal.Length, data = iris)
+model1 %>% summary()
+```
+
+# Hypthesis Testing Cont.
+
+- Here are the examples of mathematical equations:
+
+$$H_0: \mu_1 = \mu_2 $$
+
+$$H_A: \mu_1 \ne \mu_2$$
+
+$$S = \sum^n_{i = 1}d^2_i$$
+
+- You can also place equations inline: $z = \frac{x - \mu}{\sigma}$
+
+# Discussion
+
+- Discuss the major findings of your investigation
+- Discuss any strengths and limitations. 
+- Propose directions for future investigations. 
+- This is a good place to re-state your findings as a final conclusion. What is the one take home message the reader should leave with?
+- Your final conclusion needs to be very clear.
+
+# References
+
+- Provide a list of any references you use in the presentation. 
